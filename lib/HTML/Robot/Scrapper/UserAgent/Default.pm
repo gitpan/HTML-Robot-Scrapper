@@ -6,11 +6,28 @@ use HTTP::Headers::Util qw(split_header_words);
 use Digest::SHA1  qw(sha1 sha1_hex sha1_base64);
 use v5.10;
 
+=head1 DESCRIPTION
+
+This is the user agent class. It is responsible to handle the page visit, 
+
+ and page content/parsing calls.
+
+=cut
+
 has [ qw/headers request_headers response_headers/ ] => ( is => 'rw' );
 has content => ( is => 'rw' );
 has content_type => ( is => 'rw', );
 has charset => ( is => 'rw', );
 has url => ( is => 'rw', );
+
+=head2 ua
+
+The default ua is HTTP::Tiny. However, it is possible to create a new class
+
+just like this one and make it work with other user agents.
+
+=cut
+
 has ua => ( is => 'rw', default => sub { HTTP::Tiny->new() } );
 
 sub _headers {
@@ -58,26 +75,30 @@ sub _url {
 #visit the url and load into xpath and redirects to the method
 
 =head2 visit
-Will visit the url you appended/prepended to the queue
-ex.
 
-$robot->queue->append( search => 'http://www.url.com',{
-    passed_key_values => {
-        some   => 'vars i collected here...... and ....',
-        i_will => 'pass them to the next page because ...',
-        i_need => 'stuff from this page and the other '
-    },
-    request => [ <---- OPTIONAL... force custom request
-        'GET',
-        'http://www.lopes.com.br/imoveis/busca/-/'.$estado.'/-/-/-/aluguel-de-0-a-10000/de-0-ate-1000-m2/-/60',
-        {
-            headers => {
-                'Content-Type' => 'application/x-www-form-urlencoded',
-            },
-            content => '',
-        }
-    ]
-} );
+    Will visit the url you appended/prepended to the queue
+    
+    ex.
+
+    $robot->queue->append( search => 'http://www.url.com', {
+        passed_key_values => {
+            send   => 'var across requests',
+            some   => 'vars i collected here...... and ....',
+            i_will => 'pass them to the next page because ...',
+            i_need => 'stuff from this page and the other ',
+        },
+        request => [ <---- OPTIONAL... force custom request
+            'GET',
+            'http://www.lopes.com.br/imoveis/busca/-/'.$estado.'/-/-/-/aluguel-de-0-a-10000/de-0-ate-1000-m2/-/60',
+            {
+                headers => {
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                },
+                content => '',
+            }
+        ]
+    } );
+    
 =cut
 
 sub visit {
@@ -128,6 +149,16 @@ sub parse_response {
     $self->content( $res->{ content } );
     $self->parse_content( $robot, $res );
 }
+
+=head2 parse_content
+
+Here the useragent will loop over defined content types and 
+
+will call the proper subroutine to treat page->content based
+
+on content type.
+
+=cut
 
 sub parse_content {
     my ( $self, $robot, $res ) = @_;

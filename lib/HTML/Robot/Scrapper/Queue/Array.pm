@@ -20,6 +20,14 @@ has url_visited => (
     default => sub { {} },
 );
 
+=head1 DESCRIPTION
+
+This is the queue class. It is responsible of managing the queue.
+
+It uses the api from HTML::Robot::Scrapper::Queue::Base 
+
+=cut
+
 
 
 ####

@@ -21,4 +21,4 @@ requires:
   CHI: 0
   CHI::Driver::BerkeleyDB: 0
   Test::Simple: 0.44
-version: 0.01
+version: 0.02

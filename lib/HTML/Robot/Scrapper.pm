@@ -6,7 +6,7 @@ use Data::Printer;
 use Try::Tiny;
 use v5.10;
 
-our $VERSION     = '0.01';
+our $VERSION     = '0.02';
 
 my $CUSTOMIZABLES = {
 #   reader      => 'HTML::Robot::Scrapper::Reader',
@@ -18,7 +18,6 @@ my $CUSTOMIZABLES = {
     queue       => 'HTML::Robot::Scrapper::Queue',
     useragent   => 'HTML::Robot::Scrapper::UserAgent',
     encoding    => 'HTML::Robot::Scrapper::Encoding',
-    instance    => 'HTML::Robot::Scrapper::Instance',
 };
 
 =head1 ATTRIBUTES
@@ -75,34 +74,26 @@ has encoding => (
     is      => 'rw',
 );
 
-=head2 instance
-=cut
-has instance => (
-    is      => 'rw',
-);
-
-
-
 =head2 new
 
-HTML::Robot::Scrapper->new({
-    reader      => {class   => 'HTML::Robot::Scrapper::Reader::TestReader',
-                    args    => {},                  },# or [] or any object
-    writer      => {class   => 'HTML::Robot::Scrapper::Writer::TestWriter',
-                    args    => {},                                       },
-    benchmark   => {class   => 'Base',
-                    args    => {},                                       },
-    cache       => {class   => 'Base',
-                    args    => {},                                       },
-    log         => {class   => 'Base',
-                    args    => {},                                       },
-    parser      => {class   => 'Base',
-                    args    => {},                                       },
-    queue       => {class   => 'Base',
-                    args    => {},                                       },
-    useragent   => {class   => 'Base',
-                    args    => {},                                       },
-});
+    HTML::Robot::Scrapper->new({
+        reader      => {class   => 'HTML::Robot::Scrapper::Reader::TestReader',
+                        args    => {},                  },# or [] or any object
+        writer      => {class   => 'HTML::Robot::Scrapper::Writer::TestWriter',
+                        args    => {},                                       },
+        benchmark   => {class   => 'Base',
+                        args    => {},                                       },
+        cache       => {class   => 'Base',
+                        args    => {},                                       },
+        log         => {class   => 'Base',
+                        args    => {},                                       },
+        parser      => {class   => 'Base',
+                        args    => {},                                       },
+        queue       => {class   => 'Base',
+                        args    => {},                                       },
+        useragent   => {class   => 'Base',
+                        args    => {},                                       },
+    });
 
 =cut
 
@@ -169,7 +160,9 @@ sub _load_writer {
 }
 
 =head2 before 'start'
+
     - give access to this class inside other custom classes
+
 =cut
 
 before 'start' => sub {
@@ -224,6 +217,22 @@ HTML::Robot::Scrapper - Your robot to parse webpages
 
 =head1 SYNOPSIS
 
+First off, the site for this bot answers with content type text/plain and by default
+
+    HTML::Robot::Scrapper::Parser::Default
+
+handles only text/html and text/xml 
+
+So i need to add an extra option for text/plain and tell it to use 
+
+the same method that already parses text/html, here is an example:
+
+* im using the original as base class for this: 
+
+    HTML::Robot::Scrapper::Parser::Default
+
+Here i will redefine that class and tell my $robot to favor it
+
     package WWW::Tabela::Fipe::Parser;
     use Moo;
 
@@ -237,19 +246,25 @@ HTML::Robot::Scrapper - Your robot to parse webpages
                 {
                     parse_method => 'parse_xpath',
                     description => q{
-    The method above 'parse_xpath' is inside class:
-    HTML::Robot::Scrapper::Parser::HTML::TreeBuilder::XPath
-    },
+                      The method above 'parse_xpath' is inside class:
+                      HTML::Robot::Scrapper::Parser::HTML::TreeBuilder::XPath
+                      
+                      These content type related methods will be called inside:
+                        HTML::Robot::Scrapper::UserAgent::Default around:
+                          $robot->parser->engine->$parse_method( $robot, $self->content )
+
+                    },
                 }
             ],
             'text/plain' => [
                 {
                     parse_method => 'parse_xpath',
                     description => q{
-    esse site da fipe responde em text/plain e eu preciso parsear esse content type.
-    por isso criei esta classe e passei ela como parametro, sobreescrevendo a classe
-    HTML::Robot::Scrapper::Parser::Default
-    },
+                        Here i define which prase_method will treat the page content. 
+                        Based on content type for that page. I tell it to use the 
+                        same method its using to parse html... because i know in this
+                        case text/plain should be text/html instead.
+                      },
                 }
             ],
             'text/xml' => [
@@ -263,6 +278,8 @@ HTML::Robot::Scrapper - Your robot to parse webpages
     1;
 
     package FIPE;
+
+
 
     use HTML::Robot::Scrapper;
     #   use CHI;
@@ -295,7 +312,6 @@ HTML::Robot::Scrapper - Your robot to parse webpages
             }
         },
         encoding => {class => 'Default'},
-        instance => {class => 'Default'},
     );
 
     $robot->start();
@@ -354,7 +370,7 @@ By default it uses HTTP Tiny and useragent related stuff is in:
 
     HTML::Robot::Scrapper::UserAgent::Default
 
-=head1 Project Statys
+=head1 Project Status
 
 The crawling works as expected, and works great. And the api will not change probably.
 
@@ -428,11 +444,11 @@ On this first example, it shows how to make a simple crawler... by simple i mean
 
     1;
 
-=head2 Example 2 - Tabela FIPE ( append custom request calls )
+=head1 Example 2 - Tabela FIPE ( append custom request calls )
 
 See the working version at: https://github.com/hernan604/WWW-Tabela-Fipe
 
-This example show an asp website that has those '__EVENTVALIDATION' and '__VIEWSTATE' which must be sent back again on each request... here is the example of such a website...
+This example show an asp website that has those '__EVENTVALIDATION' and '__VIEWSTATE' which must be sent back again on each request... here is the example of such crawler for such website...
 
 This example also demonstrates how one could easily login into a website and crawl it also.
 
