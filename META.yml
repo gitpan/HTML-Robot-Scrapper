@@ -20,5 +20,23 @@ no_index:
 requires:
   CHI: 0
   CHI::Driver::BerkeleyDB: 0
+  Carp: 0
+  Class::Load: 0
+  Data::Dumper: 0
+  Data::Printer: 0
+  Digest::SHA: 0
+  Digest::SHA1: 0
+  Encode: 0
+  Encode::Guess: 0
+  HTML::Entities: 0
+  HTML::TreeBuilder::XPath: 0
+  HTTP::Headers::Util: 0
+  HTTP::Tiny: 0
+  Moo: 0
   Test::Simple: 0.44
-version: 0.02
+  Time::HiRes: 0
+  Try::Tiny: 0
+  URI: 0
+  XML::XPath: 0
+  utf8: 0
+version: 0.03
