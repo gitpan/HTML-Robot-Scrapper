@@ -47,6 +47,7 @@
             "HTTP::Headers::Util" : "0",
             "HTTP::Tiny" : "0",
             "Moo" : "0",
+            "Path::Class" : "0",
             "Test::Simple" : "0.44",
             "Time::HiRes" : "0",
             "Try::Tiny" : "0",
@@ -57,5 +58,5 @@
       }
    },
    "release_status" : "stable",
-   "version" : "0.03"
+   "version" : "0.04"
 }

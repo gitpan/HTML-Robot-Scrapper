@@ -31,5 +31,6 @@ WriteMakefile(
                      'HTTP::Headers::Util' => 0,
                      'Digest::SHA1' => 0,
                      'URI' => 0,
+                     'Path::Class' => 0,
                     },
 );

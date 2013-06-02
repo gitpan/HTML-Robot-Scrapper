@@ -6,7 +6,7 @@ use Data::Printer;
 use Try::Tiny;
 use v5.10;
 
-our $VERSION     = '0.03';
+our $VERSION     = '0.04';
 
 my $CUSTOMIZABLES = {
 #   reader      => 'HTML::Robot::Scrapper::Reader',
