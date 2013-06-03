@@ -1,5 +1,5 @@
 package HTML::Robot::Scrapper::Writer::TestWriter;
-use Moo;
+use Moose;
 use v5.10;
 
 =head1 DESCRIPTION

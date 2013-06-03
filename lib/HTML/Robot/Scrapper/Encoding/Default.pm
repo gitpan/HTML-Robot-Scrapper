@@ -1,6 +1,6 @@
 package HTML::Robot::Scrapper::Encoding::Default;
 use Encode::Guess qw/iso-8859-1 utf8/;
-use Moo;
+use Moose;
 use Encode;
 use utf8;
 use Data::Printer;

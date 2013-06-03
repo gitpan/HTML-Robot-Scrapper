@@ -1,5 +1,5 @@
 package HTML::Robot::Scrapper::Queue::Array;
-use Moo;
+use Moose;
 use URI;
 use Data::Printer;
 use v5.10;

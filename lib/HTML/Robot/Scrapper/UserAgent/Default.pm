@@ -1,5 +1,5 @@
 package  HTML::Robot::Scrapper::UserAgent::Default;
-use Moo;
+use Moose;
 use Data::Printer;
 use HTTP::Tiny;
 use HTTP::Headers::Util qw(split_header_words);

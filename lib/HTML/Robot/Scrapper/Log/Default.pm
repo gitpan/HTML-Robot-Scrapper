@@ -1,5 +1,5 @@
 package HTML::Robot::Scrapper::Log::Default;
-use Moo;
+use Moose;
 
 =head1 DESCRIPTION
 

@@ -1,5 +1,5 @@
 package HTML::Robot::Scrapper::Benchmark::Default;
-use Moo;
+use Moose;
 use DateTime;
 use Data::Printer;
 use Time::HiRes qw(gettimeofday tv_interval);

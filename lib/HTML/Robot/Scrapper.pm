@@ -1,12 +1,12 @@
 package HTML::Robot::Scrapper;
-use Moo;
+use Moose;
 use Class::Load ':all';
 use Data::Dumper;
 use Data::Printer;
 use Try::Tiny;
 use v5.10;
 
-our $VERSION     = '0.04';
+our $VERSION     = '0.05';
 
 my $CUSTOMIZABLES = {
 #   reader      => 'HTML::Robot::Scrapper::Reader',
@@ -234,7 +234,7 @@ the same method that already parses text/html, here is an example:
 Here i will redefine that class and tell my $robot to favor it
 
     package WWW::Tabela::Fipe::Parser;
-    use Moo;
+    use Moose;
 
     with('HTML::Robot::Scrapper::Parser::HTML::TreeBuilder::XPath');
     with('HTML::Robot::Scrapper::Parser::XML::XPath');
@@ -327,7 +327,7 @@ it will need to parse data.. and will use the response content type to parse tha
 by default the class that handles that is: 
 
     package HTML::Robot::Scrapper::Parser::Default;
-    use Moo;
+    use Moose;
 
     with('HTML::Robot::Scrapper::Parser::HTML::TreeBuilder::XPath'); #gives parse_xpath
     with('HTML::Robot::Scrapper::Parser::XML::XPath'); #gives parse_xml
@@ -389,7 +389,7 @@ Better tests and docs.
 On this first example, it shows how to make a simple crawler... by simple i mean simple GET requests following urls... and grabbing some data.
 
     package HTML::Robot::Scrapper::Reader::TestReader;
-    use Moo;
+    use Moose;
     with 'HTML::Robot::Scrapper::Reader';
     use Data::Printer;
     use Digest::SHA qw(sha1_hex);
@@ -453,7 +453,7 @@ This example show an asp website that has those '__EVENTVALIDATION' and '__VIEWS
 This example also demonstrates how one could easily login into a website and crawl it also.
 
     package WWW::Tabela::Fipe;
-    use Moo;
+    use Moose;
     with 'HTML::Robot::Scrapper::Reader';
     use Data::Printer;
     use utf8;

@@ -12,7 +12,7 @@ WriteMakefile(
                      'Test::Simple' => 0.44,
                      'CHI' => 0,
                      'CHI::Driver::BerkeleyDB' => 0,
-                     'Moo' => 0,
+                     'Moose' => 0,
                      'Class::Load' => 0,
                      'Data::Dumper' => 0,
                      'Data::Printer' => 0,
@@ -32,5 +32,6 @@ WriteMakefile(
                      'Digest::SHA1' => 0,
                      'URI' => 0,
                      'Path::Class' => 0,
+                     'BerkeleyDB' => 0,
                     },
 );
