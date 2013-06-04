@@ -6,7 +6,7 @@ use Data::Printer;
 use Try::Tiny;
 use v5.10;
 
-our $VERSION     = '0.05';
+our $VERSION     = '0.06';
 
 my $CUSTOMIZABLES = {
 #   reader      => 'HTML::Robot::Scrapper::Reader',
@@ -101,7 +101,7 @@ sub BUILDARGS {
     my ( $class, @args ) = @_;
     my $options = {@args};
 
-    foreach my $option ( keys $CUSTOMIZABLES ) {
+    foreach my $option ( keys %$CUSTOMIZABLES ) {
         &_load_custom_class( $options, $option, $CUSTOMIZABLES );
     }
     &_load_reader( $options );
@@ -167,7 +167,7 @@ sub _load_writer {
 
 before 'start' => sub {
     my ( $self ) = @_;
-    foreach my $k ( keys $CUSTOMIZABLES ) {
+    foreach my $k ( keys %$CUSTOMIZABLES ) {
         #give access to this class inside other classes
         $self->$k->robot( $self );
     }

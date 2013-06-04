@@ -41,4 +41,4 @@ requires:
   URI: 0
   XML::XPath: 0
   utf8: 0
-version: 0.05
+version: 0.06
