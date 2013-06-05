@@ -4,7 +4,7 @@
       "Hernan Lopes (hernan@cpan.org)"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "ExtUtils::MakeMaker version 6.64, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.120921",
    "license" : [
       "unknown"
    ],
@@ -39,6 +39,7 @@
             "Class::Load" : "0",
             "Data::Dumper" : "0",
             "Data::Printer" : "0",
+            "DateTime" : "0",
             "Digest::SHA" : "0",
             "Digest::SHA1" : "0",
             "Encode" : "0",
@@ -59,5 +60,5 @@
       }
    },
    "release_status" : "stable",
-   "version" : "0.06"
+   "version" : "0.07"
 }

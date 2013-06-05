@@ -6,7 +6,7 @@ use Data::Printer;
 use Try::Tiny;
 use v5.10;
 
-our $VERSION     = '0.06';
+our $VERSION     = '0.07';
 
 my $CUSTOMIZABLES = {
 #   reader      => 'HTML::Robot::Scrapper::Reader',
@@ -101,7 +101,7 @@ sub BUILDARGS {
     my ( $class, @args ) = @_;
     my $options = {@args};
 
-    foreach my $option ( keys %$CUSTOMIZABLES ) {
+    foreach my $option ( sort keys %$CUSTOMIZABLES ) {
         &_load_custom_class( $options, $option, $CUSTOMIZABLES );
     }
     &_load_reader( $options );
@@ -112,7 +112,7 @@ sub BUILDARGS {
 
 sub _load_custom_class {
     my ( $options, $option, $CUSTOMIZABLES ) = @_; 
-    my $base_class  = $CUSTOMIZABLES->{$option} .'::Base';
+    my $base_class   = $CUSTOMIZABLES->{$option} .'::Base';
     my $engine_class = $CUSTOMIZABLES->{$option} .'::Default';
     if ( exists $options->{ $option } and
          exists $options->{ $option }->{ class } ) {
