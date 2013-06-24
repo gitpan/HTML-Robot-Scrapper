@@ -2,7 +2,6 @@ package HTML::Robot::Scrapper::Queue::Array;
 use Moose;
 use URI;
 use Data::Printer;
-use v5.10;
 
 has url_list => (
     is      => 'rw',
@@ -49,7 +48,7 @@ sub append {
                 method              => $method,
                 url                 => $url,
         };
-        foreach my $k ( keys $args ) {
+        foreach my $k ( keys %$args ) {
             $url_args->{$k} = $args->{$k};
         }
         push(
@@ -57,7 +56,7 @@ sub append {
             $url_args
         );
         $self->url_list_hash->{$url} = 1;
-        say "APPENDED '$method' : '$url' ";
+        print "APPENDED '$method' : '$url' \n";
     }
 }
 
@@ -80,7 +79,7 @@ sub prepend {
                 method              => $method,
                 url                 => $url,
         };
-        foreach my $k ( keys $args ) {
+        foreach my $k ( keys %$args ) {
             $url_args->{$k} = $args->{$k};
         }
         unshift(
@@ -88,7 +87,7 @@ sub prepend {
             $url_args
         );
         $self->url_list_hash->{$url} = 1;
-        say "PREPENDED '$method' : '$url' ";
+        print "PREPENDED '$method' : '$url' \n";
     }
 }
 

@@ -4,7 +4,6 @@ use Data::Printer;
 use HTTP::Tiny;
 use HTTP::Headers::Util qw(split_header_words);
 use Digest::SHA1  qw(sha1 sha1_hex sha1_base64);
-use v5.10;
 
 =head1 DESCRIPTION
 
@@ -174,7 +173,7 @@ sub parse_content {
     $self->charset( $content_charset );
 
     my $content_type_found = 0;
-    foreach my $ct (keys $content_types_avail ) {
+    foreach my $ct (keys %$content_types_avail ) {
         foreach my $parser ( @{ $content_types_avail->{$ct} } ) {
             next unless $content_type =~ m/^$ct/ig;
             my $parse_method = $parser->{parse_method};
@@ -183,7 +182,7 @@ sub parse_content {
             $content_type_found = 1;
         }
     }
-    say "**** Content type not set for: " . $content_type . '... please configure it correctly adding a parser for that content type' if !$content_type_found;
+    print "**** Content type not set for: " . $content_type . '... please configure it correctly adding a parser for that content type'."\n" if !$content_type_found;
 #   foreach my $ct ( keys $self->parser_content_type ) {
 #       if ( $self->response->{ headers }->{'content-type'} =~ m|^$ct|g ) {
 #           my $parser_method = $self->parser_methods->{ $self->parser_content_type->{ $ct } };

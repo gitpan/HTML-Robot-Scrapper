@@ -1,6 +1,5 @@
 package HTML::Robot::Scrapper::Writer::TestWriter;
 use Moose;
-use v5.10;
 
 =head1 DESCRIPTION
 
@@ -24,14 +23,14 @@ my $FIELDS = {
     },
 };
 
-foreach my $f ( keys $FIELDS ) {
+foreach my $f ( keys %$FIELDS ) {
     has $f => ( is => $FIELDS->{ $f }->{ is } );
 }
 
 sub save_data {
     my ( $self, $data ) = @_; 
     $self->data_to_save( $data );
-    say "Data saved...into memory!";
+    print "Data saved...into memory!\n";
 }
 
 1;
