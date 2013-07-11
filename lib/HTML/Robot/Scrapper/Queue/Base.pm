@@ -2,8 +2,8 @@ package  HTML::Robot::Scrapper::Queue::Base;
 use Moose;
 use Data::Printer;
 
-has robot => ( is => 'rw', );
-has engine => ( is => 'rw', );
+has robot   => ( is => 'rw', );
+has engine  => ( is => 'rw', );
 
 ## API METHODS
 # The engines must implement these methods
@@ -40,6 +40,11 @@ sub prepend {
         $self->robot->useragent->normalize_url($url),
         $args,
     );
+}
+
+sub add_visited {
+    my ( $self, $url ) = @_; 
+    $self->engine->add_visited( $self->robot, $url );
 }
 
 

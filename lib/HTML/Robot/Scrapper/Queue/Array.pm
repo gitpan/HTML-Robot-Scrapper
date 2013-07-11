@@ -51,10 +51,7 @@ sub append {
         foreach my $k ( keys %$args ) {
             $url_args->{$k} = $args->{$k};
         }
-        push(
-            @{ $self->url_list },
-            $url_args
-        );
+        $self->insert_on_end( $robot, $url_args );
         $self->url_list_hash->{$url} = 1;
         print "APPENDED '$method' : '$url' \n";
     }
@@ -82,13 +79,26 @@ sub prepend {
         foreach my $k ( keys %$args ) {
             $url_args->{$k} = $args->{$k};
         }
-        unshift(
-            @{ $self->url_list },
-            $url_args
-        );
+        $self->insert_on_begining( $robot, $url_args );
         $self->url_list_hash->{$url} = 1;
         print "PREPENDED '$method' : '$url' \n";
     }
+}
+
+sub insert_on_end {
+    my ( $self, $robot, $url_args ) = @_;
+    push(
+        @{ $self->url_list },
+        $url_args
+    );
+}
+
+sub insert_on_begining {
+    my ( $self, $robot, $url_args ) = @_;
+    unshift(
+        @{ $self->url_list },
+        $url_args
+    );
 }
 
 sub queue_size {
@@ -104,6 +114,10 @@ sub queue_get_item {
 sub clean_all {
     my ( $self ) = @_;
     #dumb method because its an aray, so it was just created
+}
+
+sub add_visited {
+    my ( $self, $robot, $url ) = @_; 
 }
 
 

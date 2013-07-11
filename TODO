@@ -1,3 +1,5 @@
 TODO:
 
 - Adicionar alguma entrada no useragent de modo que fique registrado o RESPONSE HEADERS e REQUEST HEADERS
+
+- Criar extensão para usar Web::Scraper::LibXML ao invés de Treebuilderxpath
