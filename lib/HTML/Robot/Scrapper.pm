@@ -5,7 +5,7 @@ use Data::Dumper;
 use Data::Printer;
 use Try::Tiny;
 
-our $VERSION     = '0.09';
+our $VERSION     = '0.10';
 
 my $CUSTOMIZABLES = {
 #   reader      => 'HTML::Robot::Scrapper::Reader',
@@ -521,7 +521,9 @@ By default it uses HTTP Tiny and useragent related stuff is in:
 
 =head1 Project Status
 
-The crawling works as expected, and works great. And the api will not change probably.
+The crawling works as expected, and works great. And the api will not change probably. 
+
+Ideas are welcome! You are welcome to contribute.
 
 =head1 TODO
 

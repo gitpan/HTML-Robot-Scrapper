@@ -39,4 +39,4 @@ requires:
   URI: 0
   XML::XPath: 0
   utf8: 0
-version: 0.09
+version: 0.10

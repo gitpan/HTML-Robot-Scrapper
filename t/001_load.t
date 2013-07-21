@@ -52,10 +52,7 @@ my $robot = HTML::Robot::Scrapper->new (
     },
     encoding  => {
         class => 'Default'
-    },
-    instance  => {
-        class => 'Default'
-    },
+    }
 );
 isa_ok ($robot, 'HTML::Robot::Scrapper', 'is obj scrapper');
 
