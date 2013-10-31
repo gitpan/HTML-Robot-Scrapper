@@ -33,6 +33,8 @@ has robot => ( is => 'rw' );
 
 =head2 passed_key_values
 
+*** will be renamed to request_storage or something like that.
+
 holds values that are passed between pages navigation.
 
 ie: im collecting data for an object, and, there is some stuff on page#1 and some other stuff on page#2 and #3. Then i can use passed_key_values to pass keys and values to my next page.
@@ -86,24 +88,24 @@ sub current_page {
 
 =head2 tree
 
-shortcut for $self->robot->parser->engine->tree
+shortcut for $self->robot->parser->tree
 
 =cut
 
 sub tree {
     my ( $self ) = @_;
-    return $self->robot->parser->engine->tree;
+    return $self->robot->parser->tree;
 }
 
 =head2 xml
 
-shortcut for $self->robot->parser->engine->xml
+shortcut for $self->robot->parser->xml
 
 =cut
 
 sub xml {
     my ( $self ) = @_;
-    return $self->robot->parser->engine->xml;
+    return $self->robot->parser->xml;
 }
 
 1;

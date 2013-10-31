@@ -1,23 +1,17 @@
 package HTML::Robot::Scrapper;
 use Moose;
-use Class::Load ':all';
+#use Class::Load ':all';
 use Data::Dumper;
 use Data::Printer;
 use Try::Tiny;
+use HTML::Robot::Scrapper::Benchmark::Default;
+use HTML::Robot::Scrapper::Log::Default;
+use HTML::Robot::Scrapper::Parser::Default;
+use HTML::Robot::Scrapper::Queue::Default;
+use HTML::Robot::Scrapper::UserAgent::Default;
+use HTML::Robot::Scrapper::Encoding::Default;
 
-our $VERSION     = '0.10';
-
-my $CUSTOMIZABLES = {
-#   reader      => 'HTML::Robot::Scrapper::Reader',
-#   writer      => 'HTML::Robot::Scrapper::Writer',
-    benchmark   => 'HTML::Robot::Scrapper::Benchmark',
-    cache       => 'HTML::Robot::Scrapper::Cache',
-    log         => 'HTML::Robot::Scrapper::Log',
-    parser      => 'HTML::Robot::Scrapper::Parser',
-    queue       => 'HTML::Robot::Scrapper::Queue',
-    useragent   => 'HTML::Robot::Scrapper::UserAgent',
-    encoding    => 'HTML::Robot::Scrapper::Encoding',
-};
+our $VERSION     = '0.11';
 
 =head1 ATTRIBUTES
 
@@ -30,6 +24,9 @@ this attribute access your reader class instance
 =cut
 has reader => (
     is      => 'rw',
+#   default => sub {
+#       
+#   },
 );
 
 =head2 writer
@@ -39,6 +36,8 @@ this attribute accesses your writer class instance
 =cut
 has  writer => (
     is      => 'rw',
+#   default => sub {
+#   },
 );
 
 =head2 benchmark
@@ -48,6 +47,9 @@ not ready, i want a catalyst type of method tree like debug for each method for 
 =cut
 has benchmark => (
     is      => 'rw',
+    default => sub {
+        HTML::Robot::Scrapper::Benchmark::Default->new();
+    },
 );
 =head2 chache
 
@@ -57,6 +59,9 @@ using the cache you will not need to download the page each time, so its good fo
 =cut
 has cache => (
     is      => 'rw',
+#   default => sub {
+#       HTML::Robot::Scrapper::Cache::Default->new();
+#   },
 );
 =head2 log
 
@@ -65,6 +70,9 @@ the log is not ready yet however it will be log4perl
 =cut
 has log => (
     is      => 'rw',
+    default => sub {
+        HTML::Robot::Scrapper::Log::Default->new();
+    },
 );
 =head2 parser
 
@@ -98,6 +106,9 @@ and the parser is:
 =cut
 has parser => (
     is      => 'rw',
+    default => sub {
+        HTML::Robot::Scrapper::Parser::Default->new();
+    },
 );
 =head2 queue
 
@@ -121,119 +132,56 @@ a different class
 =cut
 has queue => (
     is      => 'rw',
+    default => sub {
+        HTML::Robot::Scrapper::Queue::Default->new();
+    },
 );
 
 =head2 useragent
 =cut
 has useragent => (
     is      => 'rw',
+    default => sub {
+        HTML::Robot::Scrapper::UserAgent::Default->new();
+    },
 );
 
 =head2 encoding
 =cut
 has encoding => (
     is      => 'rw',
+    default => sub {
+        HTML::Robot::Scrapper::Encoding::Default->new();
+    },
 );
+
+
+has custom_attrs => (
+    is      => 'rw',
+    default => sub {
+      return [qw/benchmark cache log parser queue useragent encoding/];
+    }
+); 
 
 =head2 new
 
-    HTML::Robot::Scrapper->new({
-        #you must create your own reader/parser
-        reader      => {class   => 'HTML::Robot::Scrapper::Reader::TestReader',
-                        args    => {},                  },# or [] or any object
-        #you must create your own writer to save your collected data
-        writer      => {class   => 'HTML::Robot::Scrapper::Writer::TestWriter',
-                        args    => {},                                       },
-        benchmark   => {class   => 'Default',
-                        args    => {},                                       },
-        cache       => {class   => 'Default',
-                        args    => {},                                       },
-        log         => {class   => 'Default',
-                        args    => {},                                       },
-        parser      => {class   => 'Default',
-                        args    => {},                                       },
-        queue       => {class   => 'Default',
-                        args    => {},                                       },
-        useragent   => {class   => 'Default',
-                        args    => {},                                       },
-    });
+    my $robot = HTML::Robot::Scrapper->new (
+        reader    => HTML::Robot::Scrapper::Reader::TestReader->new,
+        writer    => HTML::Robot::Scrapper::Writer::TestWriter->new,
+    #   cache     => CHI->new(
+    #                   driver => 'BerkeleyDB',
+    #                   root_dir => dir( getcwd() , "cache" ),
+    #           ),
+    #   log       => HTML::Robot::Scrapper::Log::Default->new(),
+    #   parser    => HTML::Robot::Scrapper::Parser::Default->new(),
+    #   queue     => HTML::Robot::Scrapper::Queue::Default->new(),
+    #   useragent => HTML::Robot::Scrapper::UserAgent::Default->new(),
+    #   encoding  => HTML::Robot::Scrapper::Encoding::Default->new(),
+    );
 
 =cut
 
-sub BUILDARGS {
-    my ( $class, @args ) = @_;
-    my $options = {@args};
 
-    foreach my $option ( sort keys %$CUSTOMIZABLES ) {
-        &_load_custom_class( $options, $option, $CUSTOMIZABLES );
-    }
-    &_load_reader( $options );
-    &_load_writer( $options );
-
-    return $options;
-};
-
-sub _load_custom_class {
-    my ( $options, $option, $CUSTOMIZABLES ) = @_;
-    my $base_class   = $CUSTOMIZABLES->{$option} .'::Base';
-
-    SET_BASE_CLASS:{
-        if ( exists $options->{ $option } and
-             exists $options->{ $option }->{ base_class } ) {
-            $base_class = $options->{ $option }->{ base_class };
-            #set another base class
-        }
-    }
-
-    my $engine_class = $CUSTOMIZABLES->{$option} .'::Default';
-
-    SET_ENGINE_CLASS:{
-        if ( exists $options->{ $option } and
-             exists $options->{ $option }->{ class } ) {
-            $engine_class = $CUSTOMIZABLES->{$option}
-                . '::' . $options->{ $option }->{ class };
-        }
-    }
-
-    #load base class interface
-    try {
-        $base_class = load_class( $base_class );
-    } catch {
-        print "Could not load base_class: " . $base_class . "\n";
-    };
-
-    #load custom engine
-    try {
-        $engine_class = load_class( $engine_class );
-    } catch {
-        warn "ERROR/WARNING Could not load class $engine_class. error: $_";
-        warn "Trying to load:" . $options->{ $option }->{ class };
-        try {
-            $engine_class = load_class( $options->{ $option }->{ class } );
-            return 1;
-        } catch {
-            warn "Fatal error: Could not load class $engine_class. error: $_";
-        };
-    };
-    my $args = $options->{$option}->{args}||{};
-    $options->{$option} = $base_class->new(
-        engine => $engine_class->new( $args ),
-        ( exists $options->{$option}->{args}->{is_active}) ?
-          ( is_active => $options->{$option}->{args}->{is_active} ) : (),
-    );
-}
-
-sub _load_reader {
-    my ( $options ) = @_; 
-    my $reader_class = load_class( $options->{ reader }->{ class } );
-    $options->{reader} = $reader_class->new( $options->{ reader }->{ args } || {} );
-}
-
-sub _load_writer {
-    my ( $options  ) = @_; 
-    my $writer_class = load_class( $options->{ writer }->{ class } );
-    $options->{writer} = $writer_class->new( $options->{ writer }->{ args } || {} );
-}
 
 =head2 before 'start'
 
@@ -243,9 +191,9 @@ sub _load_writer {
 
 before 'start' => sub {
     my ( $self ) = @_;
-    foreach my $k ( keys %$CUSTOMIZABLES ) {
+    foreach my $attr ( @{ $self->custom_attrs } ) {
         #give access to this class inside other classes
-        $self->$k->robot( $self );
+        $self->$attr->robot( $self ) if defined $self->$attr and $self->$attr->can( "robot" );
     }
     $self->reader->robot( $self );
 };
@@ -295,7 +243,7 @@ HTML::Robot::Scrapper - Your robot to parse webpages
 
 =head1 SYNOPSIS
 
-See a working example under the module: WWW::Tabela::Fipe ( search on cpan ). 
+See a working example under the module: WWW::Tabela::Fipe ( search on github ). 
 
 The class
 
@@ -314,16 +262,18 @@ the same method that already parses text/html, here is an example:
 Here i will redefine that class and tell my $robot to favor it
 
     ...
-    parser => {class => 'WWW::Tabela::Fipe::Parser'},
+    parser => WWW::Tabela::Fipe::Parser->new,
     ...
 
 See below:
 
-    package WWW::Tabela::Fipe::Parser;
-    use Moose;
+    package  WWW::Tabela::Fipe::Parser;
+    use Moo;
 
-    with('HTML::Robot::Scrapper::Parser::HTML::TreeBuilder::XPath');
-    with('HTML::Robot::Scrapper::Parser::XML::XPath');
+    has [qw/engine robot/] => ( is => 'rw' );
+
+    with('HTML::Robot::Scrapper::Parser::HTML::TreeBuilder::XPath'); 
+    with('HTML::Robot::Scrapper::Parser::XML::XPath'); 
 
     sub content_types {
         my ( $self ) = @_;
@@ -332,13 +282,8 @@ See below:
                 {
                     parse_method => 'parse_xpath',
                     description => q{
-                      The method above 'parse_xpath' is inside class:
-                      HTML::Robot::Scrapper::Parser::HTML::TreeBuilder::XPath
-                      
-                      These content type related methods will be called inside:
-                        HTML::Robot::Scrapper::UserAgent::Default around:
-                          $robot->parser->engine->$parse_method( $robot, $self->content )
-
+                        The method above 'parse_xpath' is inside class:
+                        HTML::Robot::Scrapper::Parser::HTML::TreeBuilder::XPath
                     },
                 }
             ],
@@ -346,11 +291,10 @@ See below:
                 {
                     parse_method => 'parse_xpath',
                     description => q{
-                        Here i define which prase_method will treat the page content. 
-                        Based on content type for that page. I tell it to use the 
-                        same method its using to parse html... because i know in this
-                        case text/plain should be text/html instead.
-                      },
+                        esse site da fipe responde em text/plain e eu preciso parsear esse content type.
+                        por isso criei esta classe e passei ela como parametro, sobreescrevendo a classe 
+                        HTML::Robot::Scrapper::Parser::Default
+                    },
                 }
             ],
             'text/xml' => [
@@ -365,39 +309,31 @@ See below:
 
     package FIPE;
 
-
-
     use HTML::Robot::Scrapper;
-    #   use CHI;
+    #use CHI;
     use HTTP::Tiny;
     use HTTP::CookieJar;
+    use WWW::Tabela::Fipe;
+    use WWW::Tabela::FipeWrite;
+    #use WWW::Tabela::Fipe::Parser;
+    use HTML::Robot::Scrapper::UserAgent::Default;
 
-    my $robot = HTML::Robot::Scrapper->new (
-        reader => { # REQ
-            class => 'WWW::Tabela::Fipe',
-        },
-        writer => {class => 'WWW::Tabela::FipeWrite',}, #REQ
-        benchmark => {class => 'Default'},
-    #   cache => {
-    #     class => 'Default',
-    #     args => {
-    #         is_active => 0,
-    #         engine => CHI->new(
-    #             driver => 'BerkeleyDB',
-    #             root_dir => "/home/catalyst/WWW-Tabela-Fipe/cache/",
-    #         ),
-    #     },
-    #   },
-        log => {class => 'Default'},
-        parser => {class => 'WWW::Tabela::Fipe::Parser'}, #custom for tb fipe. because they reply with text/plain content type
-        queue => {class => 'Default'},
-        useragent => {
-            class => 'Default',
-            args => {
-                ua => HTTP::Tiny->new( cookie_jar => HTTP::CookieJar->new),
-            }
-        },
-        encoding => {class => 'Default'},
+    my $robot = HTML::Robot::Scrapper->new(
+        reader    => WWW::Tabela::Fipe->new,
+        writer    => WWW::Tabela::FipeWrite->new,
+    #   cache     => 
+    #           CHI->new(
+    #                   driver => 'BerkeleyDB',
+    #                   root_dir => "/home/catalyst/WWW-Tabela-Fipe/cache/",
+    #           ),
+        parser    => WWW::Tabela::Fipe::Parser->new,  #custom para tb fipe. pois eles respondem com Content type text/plain
+        useragent => HTML::Robot::Scrapper::UserAgent::Default->new(
+                     ua => HTTP::Tiny->new( 
+                        cookie_jar => HTTP::CookieJar->new,
+                        agent      => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:24.0) Gecko/20100101 Firefox/24.0'
+                     ),
+
+        )
     );
 
     $robot->start();
@@ -471,6 +407,8 @@ by default the class that handles that is:
 
     package HTML::Robot::Scrapper::Parser::Default;
     use Moose;
+
+    has [qw/engine robot/] => ( is => 'rw' );
 
     with('HTML::Robot::Scrapper::Parser::HTML::TreeBuilder::XPath'); #gives parse_xpath
     with('HTML::Robot::Scrapper::Parser::XML::XPath'); #gives parse_xml
@@ -566,8 +504,8 @@ On this first example, it shows how to make a simple crawler... by simple i mean
 
     sub search {
         my ( $self ) = @_;
-        my $title = $self->robot->parser->engine->tree->findvalue( '//title' );
-        my $h1 = $self->robot->parser->engine->tree->findvalue( '//h1' );
+        my $title = $self->robot->parser->tree->findvalue( '//title' );
+        my $h1 = $self->robot->parser->tree->findvalue( '//h1' );
         warn $title;
         warn p $self->robot->useragent->url ;
         push( @{ $self->array_of_data } , 
